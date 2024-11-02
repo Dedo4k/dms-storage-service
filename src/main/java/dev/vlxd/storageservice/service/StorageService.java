@@ -18,7 +18,6 @@ package dev.vlxd.storageservice.service;
 import org.springframework.core.io.Resource;
 
 import java.io.InputStream;
-import java.net.URI;
 
 public interface StorageService {
 

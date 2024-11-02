@@ -48,8 +48,8 @@ public class StorageController {
         }
     }
 
-    @GetMapping("/files")
-    ResponseEntity<Resource> serve(@PathParam("filename") String fileId) {
+    @GetMapping("/resource")
+    ResponseEntity<Resource> getResource(@PathParam("fileId") String fileId) {
         Resource resource = storageService.loadAsResource(fileId);
 
         if (resource == null) {

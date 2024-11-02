@@ -63,7 +63,7 @@ public class LocalStorageService implements StorageService {
             throw new StorageException("Failed to store file", e);
         }
 
-        return relativePath(dest).toString();
+        return filename;
     }
 
     @Override
