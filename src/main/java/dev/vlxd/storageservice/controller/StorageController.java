@@ -20,12 +20,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.websocket.server.PathParam;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 @RestController
 @RequestMapping("/v1/storage")
@@ -41,7 +44,7 @@ public class StorageController {
     ResponseEntity<String> upload(HttpServletRequest request, @RequestHeader("X-Filename") String filename) {
         try (InputStream inputStream = request.getInputStream()) {
             return ResponseEntity
-                    .status(HttpStatus.CREATED)
+                    .ok()
                     .body(storageService.uploadFile(inputStream, filename));
         } catch (IOException e) {
             throw new RuntimeException("Failed to process request input stream", e);
@@ -56,10 +59,19 @@ public class StorageController {
             return ResponseEntity.notFound().build();
         }
 
+        MimeType contentType;
+
+        try {
+            contentType = MimeTypeUtils.parseMimeType(Files.probeContentType(resource.getFile().toPath()));
+        } catch (IOException e) {
+            contentType = MimeTypeUtils.APPLICATION_OCTET_STREAM;
+        }
+
         return ResponseEntity.ok()
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=\"" + resource.getFilename() + "\"")
+                .contentType(MediaType.asMediaType(contentType))
                 .body(resource);
     }
 }
