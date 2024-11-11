@@ -74,4 +74,9 @@ public class StorageController {
                 .contentType(MediaType.asMediaType(contentType))
                 .body(resource);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Boolean> delete(@PathParam("fileId") String fileId) {
+        return ResponseEntity.ok(storageService.deleteFile(fileId));
+    }
 }

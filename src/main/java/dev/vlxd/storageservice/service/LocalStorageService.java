@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileSystemUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +51,7 @@ public class LocalStorageService implements StorageService {
 
         if (!dest.startsWith(this.root)) {
             throw new StorageException(
-                    "Cannot store file outside storage root directory");
+                    "Can not store file outside storage root directory");
         }
 
         try {
@@ -82,7 +83,14 @@ public class LocalStorageService implements StorageService {
     @Override
     public boolean deleteFile(String fileId) {
         try {
-            return Files.deleteIfExists(Paths.get(fileId));
+            Path path = resolvePath(fileId);
+
+            if (!path.startsWith(this.root)) {
+                throw new StorageException(
+                        "Can not delete file outside storage root directory");
+            }
+
+            return FileSystemUtils.deleteRecursively(path);
         } catch (IOException e) {
             throw new StorageException("Failed to delete file", e);
         }
