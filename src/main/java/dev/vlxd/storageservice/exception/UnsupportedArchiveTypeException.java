@@ -13,17 +13,15 @@
  * For any permissions not covered by the license or any inquiries about usage, please contact: [lailo.vlad@gmail.com]
  */
 
-package dev.vlxd.storageservice.service;
+package dev.vlxd.storageservice.exception;
 
-import org.springframework.core.io.Resource;
+public class UnsupportedArchiveTypeException extends RuntimeException {
 
-import java.io.InputStream;
+    public UnsupportedArchiveTypeException(String message) {
+        super(message);
+    }
 
-public interface StorageService {
-
-    String uploadFile(InputStream inputStream, String filename);
-
-    Resource loadAsResource(String fileId);
-
-    boolean deleteFile(String fileId);
+    public UnsupportedArchiveTypeException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
