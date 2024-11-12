@@ -15,8 +15,10 @@
 
 package dev.vlxd.storageservice.controller;
 
-import dev.vlxd.storageservice.service.StorageService;
+import dev.vlxd.storageservice.constants.ArchiveType;
+import dev.vlxd.storageservice.service.storage.IStorageService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.server.PathParam;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -28,15 +30,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 
 @RestController
 @RequestMapping("/v1/storage")
 public class StorageController {
 
-    private final StorageService storageService;
+    private final IStorageService storageService;
 
-    public StorageController(StorageService storageService) {
+    public StorageController(IStorageService storageService) {
         this.storageService = storageService;
     }
 
@@ -73,6 +76,26 @@ public class StorageController {
                         "attachment; filename=\"" + resource.getFilename() + "\"")
                 .contentType(MediaType.asMediaType(contentType))
                 .body(resource);
+    }
+
+    @GetMapping("/archive")
+    public ResponseEntity<Void> archive(@PathParam("fileId") String fileId,
+                                        @PathParam("archiveType") ArchiveType archiveType,
+                                        HttpServletResponse response) {
+        storageService.checkFile(fileId);
+
+        try (OutputStream outputStream = response.getOutputStream()) {
+            String[] segments = fileId.split("/");
+
+            response.setContentType(archiveType.getContentType());
+            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + segments[segments.length - 1] + ".zip");
+
+            storageService.archiveFile(archiveType, fileId, outputStream);
+
+            return ResponseEntity.ok(null);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to process response output stream", e);
+        }
     }
 
     @DeleteMapping("/delete")
