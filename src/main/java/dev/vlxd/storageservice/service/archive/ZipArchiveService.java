@@ -61,7 +61,7 @@ public class ZipArchiveService implements IArchiveService {
                 ZipEntry zipEntry = new ZipEntry(parent);
                 zos.putNextEntry(zipEntry);
 
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[8 * 1024];
                 int bytesRead;
 
                 while ((bytesRead = fis.read(buffer)) != -1) {
