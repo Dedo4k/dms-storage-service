@@ -79,9 +79,9 @@ public class StorageController {
     }
 
     @GetMapping("/archive")
-    public ResponseEntity<Void> archive(@PathParam("fileId") String fileId,
-                                        @PathParam("archiveType") ArchiveType archiveType,
-                                        HttpServletResponse response) {
+    public void archive(@PathParam("fileId") String fileId,
+                        @PathParam("archiveType") ArchiveType archiveType,
+                        HttpServletResponse response) {
         storageService.checkFile(fileId);
 
         try (OutputStream outputStream = response.getOutputStream()) {
@@ -91,8 +91,6 @@ public class StorageController {
             response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + segments[segments.length - 1] + ".zip");
 
             storageService.archiveFile(archiveType, fileId, outputStream);
-
-            return ResponseEntity.ok(null);
         } catch (IOException e) {
             throw new RuntimeException("Failed to process response output stream", e);
         }
