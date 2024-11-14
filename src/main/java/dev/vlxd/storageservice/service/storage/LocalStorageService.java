@@ -40,8 +40,10 @@ public class LocalStorageService implements IStorageService {
     private final ArchiveManagerService archiveService;
 
     @Autowired
-    public LocalStorageService(@Value("${storage.root}") String rootPath,
-                               ArchiveManagerService archiveService) {
+    public LocalStorageService(
+            @Value("${storage.root}") String rootPath,
+            ArchiveManagerService archiveService
+    ) {
         this.root = Paths.get(rootPath);
         this.archiveService = archiveService;
         try {

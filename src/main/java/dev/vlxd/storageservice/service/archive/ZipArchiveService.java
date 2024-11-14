@@ -51,7 +51,10 @@ public class ZipArchiveService implements IArchiveService {
                 zos.closeEntry();
 
                 try (Stream<Path> paths = Files.list(file.toPath())) {
-                    paths.forEach(child -> archiveRecursively(child.toFile(), folderName + child.getFileName(), zos));
+                    paths.forEach(child -> archiveRecursively(
+                            child.toFile(),
+                            folderName + child.getFileName(), zos
+                    ));
                 }
             } catch (IOException e) {
                 throw new ArchiveException("Failed to process files to archive", e);

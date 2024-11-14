@@ -73,22 +73,28 @@ public class StorageController {
         return ResponseEntity.ok()
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + resource.getFilename() + "\"")
+                        "attachment; filename=\"" + resource.getFilename() + "\""
+                )
                 .contentType(MediaType.asMediaType(contentType))
                 .body(resource);
     }
 
     @GetMapping("/archive")
-    public void archive(@PathParam("fileId") String fileId,
-                        @PathParam("archiveType") ArchiveType archiveType,
-                        HttpServletResponse response) {
+    public void archive(
+            @PathParam("fileId") String fileId,
+            @PathParam("archiveType") ArchiveType archiveType,
+            HttpServletResponse response
+    ) {
         storageService.checkFile(fileId);
 
         try (OutputStream outputStream = response.getOutputStream()) {
             String[] segments = fileId.split("/");
 
             response.setContentType(archiveType.getContentType());
-            response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + segments[segments.length - 1] + ".zip");
+            response.setHeader(
+                    HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=" + segments[segments.length - 1] + ".zip"
+            );
 
             storageService.archiveFile(archiveType, fileId, outputStream);
         } catch (IOException e) {
